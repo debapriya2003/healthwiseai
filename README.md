@@ -83,7 +83,7 @@ lib/
 ---
 
 ### **2. Message Model**
-```dart
+
 class Message {
   final String sender;
   final String text;
@@ -100,7 +100,7 @@ class Message {
     text: json['text'],
   );
 }
-````
+
 
 ---
 
