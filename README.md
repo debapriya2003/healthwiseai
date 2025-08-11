@@ -187,25 +187,9 @@ final response = await http.post(
 * `provider` — for state management.
 
 ---
-
-## 🖼 UI Preview (Concept)
-
-
-[ Sidebar ]  |  Chat Window
-             -----------------
-  Menu       |  [ AI Response in Markdown Box ]
-  Saved      |  [ User Message Bubble       ]
-  Settings   |  [ AI Response in Markdown   ]
-```
-
-
-
 ## 📜 License
 
 This project is open-source and available under the MIT License
 ---
 
-
-
-If you want, I can now also **make this Markdown into a polished GitHub README** with badges, screenshots, and usage instructions. That way it looks professional for public release.
 
