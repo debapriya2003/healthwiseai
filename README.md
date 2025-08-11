@@ -190,7 +190,7 @@ final response = await http.post(
 
 ## 🖼 UI Preview (Concept)
 
-```
+
 [ Sidebar ]  |  Chat Window
              -----------------
   Menu       |  [ AI Response in Markdown Box ]
@@ -198,15 +198,14 @@ final response = await http.post(
   Settings   |  [ AI Response in Markdown   ]
 ```
 
----
+
 
 ## 📜 License
 
-This project is open-source and available under the MIT License.
-
-```
-
+This project is open-source and available under the MIT License
 ---
 
+
+
 If you want, I can now also **make this Markdown into a polished GitHub README** with badges, screenshots, and usage instructions. That way it looks professional for public release.
-```
+
