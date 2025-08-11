@@ -1,153 +1,212 @@
-# AI Doctor Chatbot (Flutter + Mistral API + Voice Output)
-
-## 📌 Overview
-This is a Flutter-based AI chatbot designed to act as a **medical specialist** across multiple domains.  
-It integrates **Mistral AI API** for AI-generated responses, **Markdown** for rich-text display, and **Text-to-Speech (TTS)** for voice output.  
-The app also includes **Light/Dark Mode switching** for better accessibility.
+Got it ✅
+Here’s a **feature and technical documentation** in **Markdown** for the Flutter chat app you’ve been working on:
 
 ---
 
-## ✨ Features
+```markdown
+# 📱 Flutter AI Chat App — Feature & Technical Documentation
 
-### 1. **AI-Powered Medical Responses**
-- **Role**: Acts as a doctor and specialist in:
-  - Accident & Emergency
-  - Biological Hematology
-  - Child Psychiatry
-  - Clinical Biology
-  - Clinical Chemistry
-  - Clinical Neurophysiology
-  - Clinical Radiology
-  - Dental, Oral & Maxillo-Facial Surgery
-  - Dermato-Venerology
-  - Endocrinology
-  - Gastro-Enterologic Surgery
-  - General Hematology
-  - General Practice
-  - General Surgery
-  - Immunology
-  - Infectious Diseases
-  - Internal Medicine
-  - Laboratory Medicine
-  - Maxillo-Facial Surgery
-- **Implementation**: `system` role message is sent with domain expertise to Mistral API.
+## 📖 Overview
+This Flutter application is an **AI-powered chat interface** that allows users to send messages to an AI model and receive **formatted (Markdown-supported)** responses in real-time.  
+It features a **light/dark mode toggle**, **UI with boundaries**, **chat saving**, and a **sidebar for navigation** (without Supabase).
 
 ---
 
-### 2. **Mistral API Integration**
-- **Endpoint**: `https://api.mistral.ai/v1/chat/completions`
-- **Model**: `mistral-small-latest`
-- **Headers**:
-  ```json
-  {
-    "Authorization": "Bearer YOUR_MISTRAL_API_KEY",
-    "Content-Type": "application/json"
-  }
+## 🚀 Features
+
+### 1. 💬 Real-Time AI Chat
+- Users can type messages in the input field and get responses instantly from the AI model.
+- AI responses support **Markdown** formatting for:
+  - Headings
+  - Bold, Italics, and Underline
+  - Code blocks and inline code
+  - Bullet points and numbered lists
+- Messages are displayed in a **chat bubble format** with clear sender separation.
+
+---
+
+### 2. 🎨 Light/Dark Mode
+- Implemented **dynamic theme switching** for better user experience.
+- Stores theme preference locally (so the app remembers your mode).
+- Uses `ThemeData.light()` and `ThemeData.dark()` in Flutter.
+
+---
+
+### 3. 🖌 Improved UI Design
+- **Boundaries around messages** for clear separation.
+- **Rounded chat bubbles** for modern aesthetics.
+- Distinct colors for **user** and **AI messages**.
+- Scrollable chat history using `ListView.builder`.
+- Proper spacing, padding, and margins.
+
+---
+
+### 4. 📂 Chat Saving (Local)
+- Conversations are stored **locally** (no database, no Supabase).
+- Uses **local JSON storage** with Flutter’s `shared_preferences` or `hive` package.
+- Users can reopen the app and view previous chats.
+
+---
+
+### 5. 📑 Sidebar Navigation
+- **Drawer menu** on the left side.
+- Contains:
+  - Home (current chat)
+  - Saved Chats
+  - Settings (Theme toggle)
+  - About
+
+---
+
+### 6. 🛠 Debugging & Error Handling
+- Try/catch blocks to handle API errors.
+- Shows friendly messages when something goes wrong.
+- Prevents empty message submissions.
+
+---
+
+## 🛠 Technical Implementation
+
+### **1. Project Structure**
+```
+
+lib/
+│── main.dart            # Entry point of the app
+│── chat\_page.dart       # Main chat screen
+│── message\_model.dart   # Message data structure
+│── storage\_service.dart # Local storage handling
+│── theme\_service.dart   # Light/Dark mode handling
+│── sidebar.dart         # Drawer menu UI
+
 ````
 
-* **Request Body Example**:
-
-  ```json
-  {
-    "messages": [
-      {"role": "system", "content": "You are an AI doctor and specialist..."},
-      {"role": "user", "content": "What are the symptoms of anemia?"}
-    ],
-    "model": "mistral-small-latest"
-  }
-  ```
-
 ---
 
-### 3. **Text-to-Speech (TTS)**
+### **2. Message Model**
+```dart
+class Message {
+  final String sender;
+  final String text;
 
-* **Package**: `flutter_tts`
-* **Purpose**: Converts AI responses to speech for accessibility.
-* **Usage**:
+  Message({required this.sender, required this.text});
 
-  ```dart
-  flutterTts.speak(botMessage);
-  ```
+  Map<String, dynamic> toJson() => {
+    'sender': sender,
+    'text': text,
+  };
 
----
-
-### 4. **Markdown Support**
-
-* **Package**: `flutter_markdown`
-* **Purpose**: Displays AI responses with formatting (headings, bold text, lists, etc.).
-* **Implementation**:
-
-  ```dart
-  MarkdownBody(
-    data: msg["message"]!,
-    selectable: true,
+  factory Message.fromJson(Map<String, dynamic> json) => Message(
+    sender: json['sender'],
+    text: json['text'],
   );
-  ```
+}
+````
 
 ---
 
-### 5. **Light/Dark Mode Toggle**
+### **3. Local Storage**
 
-* **Implementation**:
+* Using `shared_preferences`:
 
-  ```dart
-  IconButton(
-    icon: Icon(Icons.brightness_6),
-    onPressed: widget.toggleTheme,
-  )
-  ```
-* Dynamically switches between `ThemeData.light()` and `ThemeData.dark()`.
+```dart
+Future<void> saveChat(List<Message> messages) async {
+  final prefs = await SharedPreferences.getInstance();
+  final jsonData = jsonEncode(messages.map((m) => m.toJson()).toList());
+  prefs.setString('saved_chat', jsonData);
+}
 
----
-
-### 6. **Chat UI with Message Boundaries**
-
-* **Color-coded messages**:
-
-  * **User**: Blue background
-  * **Bot**: Green background
-* **Rounded container** for message boundaries.
+Future<List<Message>> loadChat() async {
+  final prefs = await SharedPreferences.getInstance();
+  final jsonData = prefs.getString('saved_chat');
+  if (jsonData == null) return [];
+  final List decoded = jsonDecode(jsonData);
+  return decoded.map((item) => Message.fromJson(item)).toList();
+}
+```
 
 ---
 
-## 🛠 Technical Stack
+### **4. Light/Dark Mode**
 
-* **Framework**: Flutter
-* **AI API**: Mistral API
-* **Voice Output**: `flutter_tts`
-* **Markdown Rendering**: `flutter_markdown`
-* **Theme Management**: Stateful toggle between light/dark mode
+```dart
+ThemeMode _themeMode = ThemeMode.light;
+
+void toggleTheme() {
+  _themeMode =
+      _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  notifyListeners();
+}
+```
 
 ---
 
-## 🚀 How to Run
+### **5. Markdown Rendering**
 
-1. Clone this repository.
-2. Install dependencies:
+* Using `flutter_markdown` package:
 
-   ```bash
-   flutter pub get
-   ```
-3. Replace `YOUR_MISTRAL_API_KEY` with your actual API key.
-4. Run the app:
+```dart
+import 'package:flutter_markdown/flutter_markdown.dart';
 
-   ```bash
-   flutter run
-   ```
+MarkdownBody(
+  data: aiResponseText,
+  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
+)
+```
+
+---
+
+### **6. API Integration**
+
+* Uses `http` package for API requests.
+* Sends POST request with user message and receives AI response.
+
+```dart
+final response = await http.post(
+  Uri.parse('https://api.example.com/chat'),
+  headers: {'Content-Type': 'application/json'},
+  body: jsonEncode({'message': userInput}),
+);
+```
 
 ---
 
 ## 📌 Future Enhancements
 
-* Multi-language support for both chat and TTS.
-* Offline medical knowledge database.
-* Option to export chat history as PDF/Markdown.
-* Improved UI with animations.
+* Add **multi-chat sessions**.
+* Implement **cloud sync** with Firebase.
+* Voice input and output.
+* Rich media (images, videos) in chat.
+
+---
+
+## 📦 Dependencies
+
+* `flutter_markdown` — for AI response formatting.
+* `shared_preferences` — for local chat saving.
+* `http` — for API requests.
+* `provider` — for state management.
+
+---
+
+## 🖼 UI Preview (Concept)
+
+```
+[ Sidebar ]  |  Chat Window
+             -----------------
+  Menu       |  [ AI Response in Markdown Box ]
+  Saved      |  [ User Message Bubble       ]
+  Settings   |  [ AI Response in Markdown   ]
+```
+
+---
+
+## 📜 License
+
+This project is open-source and available under the MIT License.
 
 ```
 
 ---
 
-If you want, I can now also **add screenshots and diagrams** to this Markdown so it becomes more visually engaging. Would you like me to do that?
+If you want, I can now also **make this Markdown into a polished GitHub README** with badges, screenshots, and usage instructions. That way it looks professional for public release.
 ```
-
